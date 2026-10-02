@@ -1,0 +1,21 @@
+# dsh-localdream — 插件自身的默认层。
+#
+# 这里只放**基础设施**配置（端口、超时）。日常使用偏好 —— 默认负面词、默认比例、
+# per-model 参数预设、提示词模板 —— 属于容器里的 JSON 文件（`<DSH_HOME>/localdream/`），
+# 用 ld_config / ld_prompt 改，改完立即生效，不需要重启。
+#
+# 要改端口或超时，请在你的 profile `cordis.patch.yml` 里追加一条同 id 的 config 覆盖，
+# 不要改这个文件（升级插件时它会被覆盖）：
+#
+#   - id: dsh-localdream
+#     config:
+#       outputDir: /sdcard/Pictures/localdream
+#       defaultModel: my-model-id
+#       maxBatch: 3
+#
+- insert:
+    - id: dsh-localdream
+      name: dsh-localdream
+      config:
+        controlBaseUrl: http://127.0.0.1:8808
+        generateBaseUrl: http://127.0.0.1:8081

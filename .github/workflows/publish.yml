@@ -1,0 +1,54 @@
+name: Publish
+
+# 只在 tag 上触发发布。推 main 不会误触发。
+# 版本号规则：X.Y.Z —— Y 是新功能/结构性改动，Z 是修补。
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # npm Trusted Publishing（OIDC）需要
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # ⚠️ 不要加 registry-url：它注入的占位 NODE_AUTH_TOKEN 会盖掉 OIDC，
+          # npm publish 会报 404（npm 用 404 代替 403）。
+
+      - name: 校验 tag 与 package.json 版本一致
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "package.json 是 $PKG，tag 是 $TAG —— tag 大概打在 bump 之前的 commit 上了"
+            exit 1
+          fi
+
+      - name: 校验运行期依赖为空
+        run: |
+          node -e "
+            const pkg = require('./package.json');
+            const deps = Object.keys(pkg.dependencies ?? {});
+            if (deps.length > 0) {
+              console.error('dependencies 必须为空（@deepseek-ai/* 由宿主提供），实际有：' + deps.join(', '));
+              process.exit(1);
+            }
+          "
+
+      - name: 测试
+        run: npm test
+
+      - name: 升级 npm（OIDC 需要较新的 npm）
+        run: npm install -g npm@latest
+
+      - name: 发布到 npm
+        run: npm publish --provenance --access public

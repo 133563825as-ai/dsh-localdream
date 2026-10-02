@@ -1,0 +1,68 @@
+{
+  "name": "dsh-localdream",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness 插件：把手机端 Local Dream 的本地 NPU 生图接进对话，一句话出图、图生图、放大与分块重绘，全程离线不计费。",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "localdream",
+    "local-dream",
+    "image-generation",
+    "text-to-image",
+    "stable-diffusion",
+    "npu",
+    "offline",
+    "img2img",
+    "upscale"
+  ],
+  "license": "MIT",
+  "author": "133563825as-ai",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/133563825as-ai/dsh-localdream.git"
+  },
+  "homepage": "https://github.com/133563825as-ai/dsh-localdream#readme",
+  "bugs": {
+    "url": "https://github.com/133563825as-ai/dsh-localdream/issues"
+  },
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./client/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "client",
+    "docs",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "for f in src/*.js src/tools/*.js; do node --check \"$f\" || exit 1; done"
+  }
+}
